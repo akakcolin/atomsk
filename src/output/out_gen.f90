@@ -20,10 +20,9 @@ contains
     CHARACTER(LEN=4096):: msg, temp
     CHARACTER(LEN=128),DIMENSION(:),ALLOCATABLE,INTENT(IN):: AUXNAMES !names of auxiliary properties
     CHARACTER(LEN=128),DIMENSION(:),ALLOCATABLE,INTENT(IN):: comment
-    LOGICAL:: fixedatoms  !are some atoms fixed?
     LOGICAL:: isreduced
     INTEGER:: i, j, last, tmp_id
-    INTEGER:: fixx, fixy, fixz  !are atoms fixed along X, Y, Z? (0=no, 1=yes)
+
     INTEGER,DIMENSION(:),ALLOCATABLE:: newindex  !list of index after sorting
     LOGICAL:: contiguous   !are atom with same species contiguous? must they be packed?
     REAL(dp),DIMENSION(3,3),INTENT(IN):: H   !Base vectors of the supercell
@@ -39,14 +38,12 @@ contains
     !
     !
     !Initialize variables
-    fixx=0
-    fixy=0
-    fixz=0
+
     tmp_id =0
     contiguous = .TRUE.
-    fixedatoms = .FALSE.
+
     !
-    WRITE(msg,*) 'entering WRITE_DFTB'
+    WRITE(msg,*) 'entering WRITE_GEN'
     CALL ATOMSK_MSG(999,(/msg/),(/0.d0/))
     !
     !
@@ -98,9 +95,7 @@ contains
           AUX2(:,1) = Q(:,5)
           AUX2(:,2) = Q(:,6)
           AUX2(:,3) = Q(:,7)
-          fixx = 1
-          fixy = 2
-          fixz = 3
+
           AUXpoint=>AUX2
        ENDIF
        !
@@ -123,16 +118,19 @@ contains
     WRITE(msg,*) "Number of different species: ", SIZE(atypes(:,1))
     CALL ATOMSK_MSG(999,(/msg/),(/0.d0/))
     !
-    OPEN(UNIT=40,FILE=outputfile,STATUS='UNKNOWN',ERR=500)
+    IF(ofu.NE.6) THEN
+       OPEN(UNIT=ofu,FILE=outputfile,STATUS='UNKNOWN',ERR=500)
+    ENDIF
+
     !
     ALLOCATE( elements( size(atypes,1) ))
 
     CALL FIND_IF_REDUCED(H,P,isreduced)
     !Write atom coordinates
     IF(isreduced) THEN
-        WRITE(40,*) " ", size(P,1), ' F'
+        WRITE(ofu,*) " ", size(P,1), ' F'
     ELSE
-        WRITE(40,*) " ", size(P,1), ' S'
+        WRITE(ofu,*) " ", size(P,1), ' S'
     ENDIF
 
     temp=""
@@ -140,7 +138,7 @@ contains
       CALL ATOMSPECIES(atypes(i,1),species)
       temp = TRIM(ADJUSTL(temp))//"  "//species
     ENDDO
-    WRITE(40,*) TRIM(ADJUSTL(temp))
+    WRITE(ofu,*) TRIM(ADJUSTL(temp))
 
     !
     210 FORMAT(i6,2X, i6, 2X,  3(f16.8,2X))
@@ -152,23 +150,23 @@ contains
                elements(tmp_id)=species
        end if
 
-       WRITE(40,210) i, tmp_id, Ppoint(i,1), Ppoint(i,2), Ppoint(i,3)
+       WRITE(ofu,210) i, tmp_id, Ppoint(i,1), Ppoint(i,2), Ppoint(i,3)
 
     ENDDO
 
 
-    write(40,*) '0.0000 0.000 0.0000'
+    write(ofu,*) '0.0000 0.000 0.0000'
 
-    WRITE(40,201) H(1,1), H(1,2), H(1,3)
-    WRITE(40,201) H(2,1), H(2,2), H(2,3)
-    WRITE(40,201) H(3,1), H(3,2), H(3,3)
+    WRITE(ofu,201) H(1,1), H(1,2), H(1,3)
+    WRITE(ofu,201) H(2,1), H(2,2), H(2,3)
+    WRITE(ofu,201) H(3,1), H(3,2), H(3,3)
     201 FORMAT(3(f16.8,2X))
     GOTO 500
     !
     !
     !
 500 CONTINUE
-    CLOSE(40)
+    CLOSE(ofu)
     msg = "GEN"
     temp = outputfile
     CALL ATOMSK_MSG(3002,(/msg,temp/),(/0.d0/))

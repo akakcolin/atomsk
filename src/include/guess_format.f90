@@ -159,6 +159,10 @@ IF( .NOT.ANY(fscore(:)>=10) ) THEN
       &   INDEX(filename,'HISTORY')>0     )   ) THEN
     CALL SET_SCORE(fscore,"dlp  ",4,1)
   ENDIF
+  IF( filename=='gen' .OR. filename=='geo_end.gen' .OR. filename=='geo.gen') THEN
+    CALL SET_SCORE(fscore,"gen  ",10,1)
+  ENDIF
+  
 ENDIF
 !
 !If we want to write the file we don't care about its content
@@ -618,6 +622,7 @@ IF(fileexists) THEN
         READ(test,*,ERR=243,END=243) NP, NP, testreal, testreal, testreal, &
                                     & testreal, testreal, testreal
         CALL SET_SCORE(fscore,"xv   ",1,0)
+        CALL SET_SCORE(fscore,"gen  ",1,0)
         243 CONTINUE
         GOTO 249
         !Atomeye, DL_POLY CONFIG (or REVCON), and VASP POSCAR formats have lines "x y z"

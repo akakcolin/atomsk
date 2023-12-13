@@ -418,7 +418,7 @@ IF( ALLOCATED(S) .AND. SIZE(S,1)==SIZE(P,1) ) THEN
   DO i=1,SIZE(outfileformats)
     IF( LEN_TRIM(outfileformats(i)) > 0 ) THEN
       SELECT CASE( outfileformats(i) )
-      CASE('atsk','ATSK','csv','CSV','d12','dlp','DLP','gin','GIN','lmp','LMP')
+      CASE('atsk','ATSK','csv','CSV','d12','dlp','DLP','gen','GEN','gin','GIN','lmp','LMP')
         !Those file formats do support shells
       CASE DEFAULT
         !Other file formats don't
