@@ -75,7 +75,7 @@ CHARACTER(LEN=32):: progressbar="linear"           !default style for progress b
 !third column if it can be written by Atomsk.
 !Additional formats may be added here, don't forget to change array size.
 !Note that each entry must be *exactly* 5 characters long (add spaces if necessary)
-CHARACTER(LEN=5),DIMENSION(33,3),PARAMETER:: flist = RESHAPE( (/ &
+CHARACTER(LEN=5),DIMENSION(34,3),PARAMETER:: flist = RESHAPE( (/ &
   & "atsk ","yes  ","yes  ", &
   & "abin ","yes  ","yes  ", &
   & "bop  ","yes  ","yes  ", &
@@ -90,6 +90,7 @@ CHARACTER(LEN=5),DIMENSION(33,3),PARAMETER:: flist = RESHAPE( (/ &
   & "dd   ","no   ","yes  ", &
   & "dlp  ","yes  ","yes  ", &
   & "fdf  ","yes  ","yes  ", &
+  & "gen  ","no   ","yes  ", &
   & "gin  ","yes  ","yes  ", &
   & "imd  ","yes  ","yes  ", &
   & "jems ","yes  ","yes  ", &

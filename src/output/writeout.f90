@@ -74,6 +74,7 @@ USE out_cif
 USE out_crystal
 USE out_csv
 USE out_dat
+USE out_gen
 USE out_dlp_cfg
 USE out_gulp_gin
 USE out_imd
@@ -453,7 +454,7 @@ IF( ALLOCATED(AUXNAMES) .AND. SIZE(AUXNAMES)>0 ) THEN
     DO i=1,SIZE(outfileformats)
       IF( LEN_TRIM(outfileformats(i)) > 0 ) THEN
         SELECT CASE( outfileformats(i) )
-        CASE('atsk','ATSK','cel','CEL','cfg','CFG','cif','CIF','csv','CSV','d12','gin','GIN','jems','pdb','str','vesta')
+        CASE('atsk','ATSK','cel','CEL','cfg','CFG','cif','CIF','csv','CSV','d12','gen','gin','GIN','jems','pdb','str','vesta')
           !Those file formats do support partial occupancies
         CASE DEFAULT
           !Other file formats don't
@@ -607,6 +608,16 @@ DO i=1,SIZE(outfileformats)
     !cannot write ddplot format here, only in mode "--ddplot"
     nwarn = nwarn+1
     CALL ATOMSK_MSG(3702,(/TRIM(outputfile)/),(/0.d0/))
+  ! dftb
+  CASE('gen','GEN')
+    CALL NAME_OUTFILE(prefix,outputfile,'gen  ')
+    INQUIRE(FILE=outputfile,EXIST=fileexists)
+    IF( (fileexists .AND. .NOT.ignore) .OR. .NOT.fileexists) THEN
+      IF(.NOT.overw) CALL CHECKFILE(outputfile,'writ')
+      CALL WRITE_GEN(H,P,comment,AUXNAMES,AUX,outputfile)
+    ELSE
+      CALL ATOMSK_MSG(3001,(/TRIM(outputfile)/),(/0.d0/))
+    ENDIF
   !
   CASE('dlp','DLP')
     outputfile = 'CONFIG'
